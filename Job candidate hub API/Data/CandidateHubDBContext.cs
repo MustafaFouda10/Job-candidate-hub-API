@@ -15,7 +15,7 @@ namespace Job_candidate_hub_API.Data
         {
         }
 
-        DbSet<Candidate> Candidates { get; set; }
+        public DbSet<Candidate> Candidates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,4 +1,6 @@
 using Job_candidate_hub_API.Data;
+using Job_candidate_hub_API.Repositories.IRepos;
+using Job_candidate_hub_API.Repositories.Repos;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,16 +12,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+#region Services & Repos Registration
+    builder.Services.AddScoped<ICandidateRepo, CandidateRepo>();
+#endregion
+
 #region CORS
     builder.Services.AddCors(options =>
-    {
-        options.AddPolicy("MyAllowSpecificOrigins", policy =>
         {
-            policy.AllowAnyOrigin();
-            policy.AllowAnyHeader();
-            policy.AllowAnyMethod();
+            options.AddPolicy("MyAllowSpecificOrigins", policy =>
+            {
+                policy.AllowAnyOrigin();
+                policy.AllowAnyHeader();
+                policy.AllowAnyMethod();
+            });
         });
-    });
 #endregion
 
 #region Connection To SQL Server
