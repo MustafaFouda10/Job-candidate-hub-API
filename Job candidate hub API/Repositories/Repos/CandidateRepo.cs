@@ -1,7 +1,9 @@
-﻿using Job_candidate_hub_API.Data;
+﻿using Job_candidate_hub_API.ApiResponse;
+using Job_candidate_hub_API.Data;
 using Job_candidate_hub_API.Models;
 using Job_candidate_hub_API.Repositories.IRepos;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Job_candidate_hub_API.Repositories.Repos
 {
@@ -21,21 +23,32 @@ namespace Job_candidate_hub_API.Repositories.Repos
         }
 
 
-        public async Task<Candidate> Create(Candidate Candidate)
+        public async Task<ApiResponse<Candidate>> Create(Candidate Candidate)
         {
             if (Candidate.FirstName != null && Candidate.LastName != null && Candidate.Email != null && Candidate.FreeTextComment != null)
             {
                 _dBContext.Candidates.Add(Candidate);
-                _dBContext.SaveChanges();
+                return new ApiResponse<Candidate>
+                {
+                    ResponseData = Candidate,
+                    CommandMessage = "Candidate Added Successfully",
+                    IsValidResponse = true
+                };
             }
 
-            return Candidate;
+            return new ApiResponse<Candidate>
+            {
+                ResponseData = null,
+                CommandMessage = "Error! Please check the inputs again",
+                IsValidResponse = false
+            };
+
         }
 
  
-        public async Task<Candidate> Update(string email, Candidate Candidate)
+        public async Task<ApiResponse<Candidate>> Update(Candidate Candidate)
         {
-            Candidate oldCandidate = _dBContext.Candidates.FirstOrDefault(c => c.Email == email);
+            Candidate oldCandidate = _dBContext.Candidates.FirstOrDefault(c => c.Email == Candidate.Email);
 
             if (oldCandidate != null)
             {
@@ -44,15 +57,26 @@ namespace Job_candidate_hub_API.Repositories.Repos
                     oldCandidate.FirstName = Candidate.FirstName;
                     oldCandidate.LastName = Candidate.LastName;
                     oldCandidate.PhoneNumber = Candidate.PhoneNumber;
-                    oldCandidate.Email = Candidate.Email;
                     oldCandidate.TimeInterval = Candidate.TimeInterval;
                     oldCandidate.LinkedInProfileURL = Candidate.LinkedInProfileURL;
                     oldCandidate.GitHubProfileURL = Candidate.GitHubProfileURL;
                     oldCandidate.FreeTextComment = Candidate.FreeTextComment;
+
+                    return new ApiResponse<Candidate>
+                    {
+                        ResponseData = Candidate,
+                        CommandMessage = "Candidate Updated Successfully",
+                        IsValidResponse = true
+                    };
                 }
             }
-               
-            return Candidate;
+
+            return new ApiResponse<Candidate>
+            {
+                ResponseData = null,
+                CommandMessage = "Error! Please check the inputs again",
+                IsValidResponse = false
+            };
         }
     }
 }

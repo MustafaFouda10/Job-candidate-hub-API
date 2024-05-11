@@ -1,6 +1,8 @@
 using Job_candidate_hub_API.Data;
 using Job_candidate_hub_API.Repositories.IRepos;
 using Job_candidate_hub_API.Repositories.Repos;
+using Job_candidate_hub_API.Services.IService;
+using Job_candidate_hub_API.Services.Service;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +17,7 @@ builder.Services.AddSwaggerGen();
 
 #region Services & Repos Registration
     builder.Services.AddScoped<ICandidateRepo, CandidateRepo>();
+    builder.Services.AddScoped<ICandidateService, CandidateService>();
 #endregion
 
 #region CORS
