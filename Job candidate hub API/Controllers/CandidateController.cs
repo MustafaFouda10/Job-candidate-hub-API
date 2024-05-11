@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Job_candidate_hub_API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class CandidateController : ControllerBase
     {
         private readonly ICandidateService _candidateService;
@@ -18,13 +18,22 @@ namespace Job_candidate_hub_API.Controllers
         }
 
         [HttpPost("InsertCandidate")]
-        public async Task<IActionResult> CreateUpdateCandidate(Candidate candidate)
+        public async Task<IActionResult> CreateUpdateCandidate([FromBody] Candidate candidate)
         {
             var response = await _candidateService.CreateUpdateCandidate(candidate);
-            if (response.IsValidResponse == true)
-                return Ok(response);
+
+            if (!ModelState.IsValid)
+            {
+                 response.Errors = ModelState.Values.SelectMany(v => v.Errors)
+                                         .Select(e => e.ErrorMessage)
+                                         .ToList();
+
+                
+                return BadRequest(response);
+            }
+    
+            return Ok(response);
             
-            return BadRequest(response);
         }
     }
 }

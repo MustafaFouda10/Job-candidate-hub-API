@@ -39,7 +39,7 @@ namespace Job_candidate_hub_API.Repositories.Repos
             return new ApiResponse<Candidate>
             {
                 ResponseData = null,
-                CommandMessage = "Error! Please check the inputs again",
+                Errors = new List<string>(),
                 IsValidResponse = false
             };
 
@@ -74,7 +74,7 @@ namespace Job_candidate_hub_API.Repositories.Repos
             return new ApiResponse<Candidate>
             {
                 ResponseData = null,
-                CommandMessage = "Error! Please check the inputs again",
+                Errors = new List<string>(),
                 IsValidResponse = false
             };
         }
