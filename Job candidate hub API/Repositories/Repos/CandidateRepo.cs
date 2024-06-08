@@ -1,5 +1,6 @@
 ﻿using Job_candidate_hub_API.ApiResponse;
 using Job_candidate_hub_API.Data;
+using Job_candidate_hub_API.DTOs;
 using Job_candidate_hub_API.Models;
 using Job_candidate_hub_API.Repositories.IRepos;
 using Microsoft.EntityFrameworkCore;
@@ -23,59 +24,47 @@ namespace Job_candidate_hub_API.Repositories.Repos
         }
 
 
-        public async Task<ApiResponse<Candidate>> Create(Candidate Candidate)
+        public async Task<ApiResponse<CandidateDto>> Create(CandidateDto Candidate)
         {
-            if (Candidate.FirstName != null && Candidate.LastName != null && Candidate.Email != null && Candidate.FreeTextComment != null)
-            {
-                _dBContext.Candidates.Add(Candidate);
-                return new ApiResponse<Candidate>
+                _dBContext.Candidates.AddAsync(new Candidate
+                {
+                    FirstName = Candidate.FirstName,
+                    LastName = Candidate.LastName,
+                    PhoneNumber = Candidate.PhoneNumber,
+                    Email= Candidate.Email,
+                    TimeInterval = Candidate.TimeInterval,
+                    LinkedInProfileURL = Candidate.LinkedInProfileURL,
+                    GitHubProfileURL = Candidate.GitHubProfileURL,
+                    FreeTextComment = Candidate.FreeTextComment,
+                });
+
+                return new ApiResponse<CandidateDto>
                 {
                     ResponseData = Candidate,
                     CommandMessage = "Candidate Added Successfully",
                     IsValidResponse = true
                 };
-            }
-
-            return new ApiResponse<Candidate>
-            {
-                ResponseData = null,
-                Errors = new List<string>(),
-                IsValidResponse = false
-            };
 
         }
 
  
-        public async Task<ApiResponse<Candidate>> Update(Candidate Candidate)
+        public async Task<ApiResponse<CandidateDto>> Update(CandidateDto Candidate)
         {
-            Candidate oldCandidate = _dBContext.Candidates.FirstOrDefault(c => c.Email == Candidate.Email);
+            Candidate oldCandidate = await GetCandidateByEmail(Candidate.Email);
 
-            if (oldCandidate != null)
+            oldCandidate.FirstName = Candidate.FirstName;
+            oldCandidate.LastName = Candidate.LastName;
+            oldCandidate.PhoneNumber = Candidate.PhoneNumber;
+            oldCandidate.TimeInterval = Candidate.TimeInterval;
+            oldCandidate.LinkedInProfileURL = Candidate.LinkedInProfileURL;
+            oldCandidate.GitHubProfileURL = Candidate.GitHubProfileURL;
+            oldCandidate.FreeTextComment = Candidate.FreeTextComment;
+
+            return new ApiResponse<CandidateDto>
             {
-                if (Candidate.FirstName != null && Candidate.LastName != null && Candidate.Email != null && Candidate.FreeTextComment != null)
-                {
-                    oldCandidate.FirstName = Candidate.FirstName;
-                    oldCandidate.LastName = Candidate.LastName;
-                    oldCandidate.PhoneNumber = Candidate.PhoneNumber;
-                    oldCandidate.TimeInterval = Candidate.TimeInterval;
-                    oldCandidate.LinkedInProfileURL = Candidate.LinkedInProfileURL;
-                    oldCandidate.GitHubProfileURL = Candidate.GitHubProfileURL;
-                    oldCandidate.FreeTextComment = Candidate.FreeTextComment;
-
-                    return new ApiResponse<Candidate>
-                    {
-                        ResponseData = Candidate,
-                        CommandMessage = "Candidate Updated Successfully",
-                        IsValidResponse = true
-                    };
-                }
-            }
-
-            return new ApiResponse<Candidate>
-            {
-                ResponseData = null,
-                Errors = new List<string>(),
-                IsValidResponse = false
+                ResponseData = Candidate,
+                CommandMessage = "Candidate Updated Successfully",
+                IsValidResponse = true
             };
         }
     }

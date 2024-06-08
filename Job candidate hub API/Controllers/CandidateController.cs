@@ -1,8 +1,10 @@
 ﻿using Job_candidate_hub_API.ApiResponse;
+using Job_candidate_hub_API.DTOs;
 using Job_candidate_hub_API.Models;
 using Job_candidate_hub_API.Services.IService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Job_candidate_hub_API.Controllers
 {
@@ -18,22 +20,14 @@ namespace Job_candidate_hub_API.Controllers
         }
 
         [HttpPost("InsertCandidate")]
-        public async Task<IActionResult> CreateUpdateCandidate([FromBody] Candidate candidate)
+        public async Task<IActionResult> CreateUpdateCandidate([FromBody] CandidateDto candidate)
         {
             var response = await _candidateService.CreateUpdateCandidate(candidate);
 
-            if (!ModelState.IsValid)
-            {
-                 response.Errors = ModelState.Values.SelectMany(v => v.Errors)
-                                         .Select(e => e.ErrorMessage)
-                                         .ToList();
-
-                
+            if (response.IsValidResponse == false)
                 return BadRequest(response);
-            }
-    
-            return Ok(response);
-            
+            else
+                return Ok(response);
         }
     }
 }
